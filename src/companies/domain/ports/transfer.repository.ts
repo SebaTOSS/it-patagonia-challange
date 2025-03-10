@@ -1,4 +1,4 @@
-import { Transfer, Company } from '../../domain';
+import { Transfer, Company } from '../../domain/entities';
 
 export interface TransferRepository {
     findCompaniesWithTransfers(start: Date, end: Date): Promise<Company[]>;

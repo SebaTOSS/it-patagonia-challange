@@ -2,11 +2,21 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
 import { CompanyTypeOrmRepository } from './company.typeorm.repository';
-import { Company } from '../../domain/company.entity';
+import { CompanyOrmEntity } from '../entities';
+import { Company } from '../../../domain/entities/company.entity';
 
 describe('CompanyTypeOrmRepository', () => {
     let repository: CompanyTypeOrmRepository;
-    let typeOrmRepo: jest.Mocked<Repository<Company>>;
+    let typeOrmRepo: jest.Mocked<Repository<CompanyOrmEntity>>;
+
+    const mockCompanyOrm: CompanyOrmEntity = {
+        id: 'uuid',
+        cuit: '30123456789',
+        name: 'Test Company',
+        adhesionDate: new Date('2023-01-01'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    };
 
     const mockCompany: Company = {
         id: 'uuid',
@@ -22,7 +32,7 @@ describe('CompanyTypeOrmRepository', () => {
             providers: [
                 CompanyTypeOrmRepository,
                 {
-                    provide: getRepositoryToken(Company),
+                    provide: getRepositoryToken(CompanyOrmEntity),
                     useValue: {
                         save: jest.fn(),
                         findOneBy: jest.fn(),
@@ -33,7 +43,7 @@ describe('CompanyTypeOrmRepository', () => {
         }).compile();
 
         repository = module.get<CompanyTypeOrmRepository>(CompanyTypeOrmRepository);
-        typeOrmRepo = module.get<Repository<Company>>(getRepositoryToken(Company)) as jest.Mocked<Repository<Company>>;
+        typeOrmRepo = module.get(getRepositoryToken(CompanyOrmEntity)) as jest.Mocked<Repository<CompanyOrmEntity>>;
     });
 
     it('should be defined', () => {
@@ -42,11 +52,18 @@ describe('CompanyTypeOrmRepository', () => {
 
     describe('create', () => {
         it('should save and return a company', async () => {
-            typeOrmRepo.save.mockResolvedValue(mockCompany);
+            typeOrmRepo.save.mockResolvedValue(mockCompanyOrm);
 
             const result = await repository.create(mockCompany);
 
-            expect(typeOrmRepo.save).toHaveBeenCalledWith(mockCompany);
+            expect(typeOrmRepo.save).toHaveBeenCalledWith(expect.objectContaining({
+                cuit: mockCompany.cuit,
+                name: mockCompany.name,
+                adhesionDate: mockCompany.adhesionDate,
+                id: mockCompany.id,
+                createdAt: mockCompany.createdAt,
+                updatedAt: mockCompany.updatedAt,
+            }));
             expect(result).toEqual(mockCompany);
         });
 
@@ -60,7 +77,7 @@ describe('CompanyTypeOrmRepository', () => {
 
     describe('findByCuit', () => {
         it('should find company by cuit', async () => {
-            typeOrmRepo.findOneBy.mockResolvedValue(mockCompany);
+            typeOrmRepo.findOneBy.mockResolvedValue(mockCompanyOrm);
 
             const result = await repository.findByCuit('30123456789');
 
@@ -82,12 +99,12 @@ describe('CompanyTypeOrmRepository', () => {
         const endDate = new Date('2023-01-31');
 
         it('should find companies in date range', async () => {
-            typeOrmRepo.find.mockResolvedValue([mockCompany]);
+            typeOrmRepo.find.mockResolvedValue([mockCompanyOrm]);
 
             const result = await repository.findByAdhesionDateRange(startDate, endDate);
 
             expect(typeOrmRepo.find).toHaveBeenCalledWith({
-                where: { adhesionDate: Between(startDate, endDate) }
+                where: { adhesionDate: Between(startDate, endDate) },
             });
             expect(result).toEqual([mockCompany]);
         });
@@ -103,7 +120,7 @@ describe('CompanyTypeOrmRepository', () => {
 
     describe('findAll', () => {
         it('should return all companies', async () => {
-            typeOrmRepo.find.mockResolvedValue([mockCompany]);
+            typeOrmRepo.find.mockResolvedValue([mockCompanyOrm]);
 
             const result = await repository.findAll();
 
@@ -114,7 +131,7 @@ describe('CompanyTypeOrmRepository', () => {
 
     describe('findById', () => {
         it('should find company by id', async () => {
-            typeOrmRepo.findOneBy.mockResolvedValue(mockCompany);
+            typeOrmRepo.findOneBy.mockResolvedValue(mockCompanyOrm);
 
             const result = await repository.findById('uuid');
 

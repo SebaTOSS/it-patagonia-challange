@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { configureSwagger } from './shared/infrastructure/swagger.config';
+import { configureSwagger } from './shared/infrastructure/swagger/swagger.config';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { SharedModule } from './shared/shared.module';
@@ -11,11 +11,9 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-        excludeExtraneousValues: true
-      }
-    })
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
   );
 
   app.enableCors({

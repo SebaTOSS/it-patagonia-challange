@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateCompanyUseCase } from './create-company.use-case';
-import { CompanyRepository } from '../ports/company.repository';
+import { CompanyRepository } from '../../domain/ports/company.repository';
 import { DateUtils } from '../../../shared/utils/date.utils';
 import { ConflictException } from '@nestjs/common';
 

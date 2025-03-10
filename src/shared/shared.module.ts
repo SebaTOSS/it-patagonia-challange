@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { typeOrmConfig } from './infrastructure/database/typeorm.config';
+import { getTypeOrmConfig } from './infrastructure/database/data-source';
 
 @Global()
 @Module({
@@ -11,9 +11,9 @@ import { typeOrmConfig } from './infrastructure/database/typeorm.config';
             envFilePath: '.env',
         }),
         TypeOrmModule.forRootAsync({
-            useFactory: (configService: ConfigService) =>
-                typeOrmConfig(configService),
+            imports: [ConfigModule],
             inject: [ConfigService],
+            useFactory: (configService: ConfigService) => getTypeOrmConfig(configService),
         }),
     ],
     exports: [TypeOrmModule],

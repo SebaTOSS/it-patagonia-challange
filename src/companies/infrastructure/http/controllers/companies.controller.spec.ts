@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CompaniesController } from './companies.controller';
-import { GetCompaniesAdheredUseCase, CreateCompanyUseCase, GetCompaniesTransfersUseCase } from '../../application/use-cases';
-import { CreateCompanyDto } from '../../application/dto/create-company.dto';
+import { GetCompaniesAdheredUseCase, CreateCompanyUseCase, GetCompaniesTransfersUseCase } from '../../../application/use-cases';
+import { CreateCompanyDto } from '../../../application/dto/create-company.dto';
 
 describe('CompaniesController', () => {
     let controller: CompaniesController;

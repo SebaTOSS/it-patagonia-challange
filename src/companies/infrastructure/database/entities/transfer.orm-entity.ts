@@ -1,8 +1,8 @@
 import { Entity, Column, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Company } from './company.entity';
+import { CompanyOrmEntity } from './company.orm-entity';
 
-@Entity()
-export class Transfer {
+@Entity('transfers')
+export class TransferOrmEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -24,6 +24,6 @@ export class Transfer {
     @Column({ name: 'updated_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
     updatedAt: Date;
 
-    @ManyToOne(() => Company)
-    company: Company;
+    @ManyToOne(() => CompanyOrmEntity)
+    company: CompanyOrmEntity;
 }

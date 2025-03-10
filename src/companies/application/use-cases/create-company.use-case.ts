@@ -1,7 +1,7 @@
 import { Injectable, ConflictException, Inject } from '@nestjs/common';
-import { CompanyRepository } from '../ports/company.repository';
+import { CompanyRepository } from '../../domain/ports/company.repository';
 import { CreateCompanyDto } from '../dto/create-company.dto';
-import { Company } from '../../domain/company.entity';
+import { Company } from '../../domain/entities/company.entity';
 import { CompanyResponse } from '../dto/company.response';
 import { DateUtils } from '../../../shared/utils/date.utils';
 
@@ -47,10 +47,13 @@ export class CreateCompanyUseCase {
      * @returns Company entity
      */
     private mapDtoToEntity(dto: CreateCompanyDto): Company {
-        const company = new Company();
-        company.cuit = dto.cuit.replace(/-/g, '');
-        company.name = dto.name;
-        company.adhesionDate = this.dateUtils.getCurrentDate();
+        const { cuit, name } = dto;
+        const fixedCuit = cuit.replace(/-/g, '');
+        const company = new Company(
+            fixedCuit,
+            name,
+            this.dateUtils.getCurrentDate(),
+        );
         
         return company;
     }

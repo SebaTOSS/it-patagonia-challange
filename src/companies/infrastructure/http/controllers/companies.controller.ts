@@ -1,12 +1,12 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateCompanyDto } from '../../application/dto/create-company.dto';
-import { CompanyResponse } from '../../application/dto/company.response';
+import { CreateCompanyDto } from '../../../application/dto/create-company.dto';
+import { CompanyResponse } from '../../../application/dto/company.response';
 import {
     GetCompaniesAdheredUseCase,
     CreateCompanyUseCase,
     GetCompaniesTransfersUseCase
-} from '../../application/use-cases';
+} from '../../../application/use-cases';
 
 @ApiTags('Companies')
 @Controller('companies')

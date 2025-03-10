@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GetCompaniesTransfersUseCase } from './get-companies-transfers.use-case';
-import { TransferRepository } from '../ports/transfer.repository';
+import { TransferRepository } from '../../domain/ports/transfer.repository';
 import { DateUtils } from '../../../shared/utils/date.utils';
 
 describe('GetCompaniesTransfersUseCase', () => {

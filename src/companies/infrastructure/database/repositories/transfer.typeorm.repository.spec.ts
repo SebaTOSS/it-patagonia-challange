@@ -2,17 +2,29 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { TransferTypeOrmRepository } from './transfer.typeorm.repository';
-import { Transfer, Company } from '../../domain';
+import { Transfer, Company } from '../../../domain/entities';
+import { TransferOrmEntity } from '../entities';
 
 describe('TransferTypeOrmRepository', () => {
     let repository: TransferTypeOrmRepository;
-    let typeOrmRepo: jest.Mocked<Repository<Transfer>>;
+    let typeOrmRepo: jest.Mocked<Repository<TransferOrmEntity>>;
 
     const mockCompany: Company = {
         id: 'company-uuid',
         cuit: '30123456789',
         name: 'Test Company',
         adhesionDate: new Date('2023-01-01'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    };
+
+    const mockTransferOrm: TransferOrmEntity = {
+        id: 'transfer-uuid',
+        amount: 1000,
+        debitAccount: 'ACC-001',
+        creditAccount: 'ACC-002',
+        date: new Date('2023-09-01'),
+        company: mockCompany as any,
         createdAt: new Date(),
         updatedAt: new Date(),
     };
@@ -33,21 +45,22 @@ describe('TransferTypeOrmRepository', () => {
             providers: [
                 TransferTypeOrmRepository,
                 {
-                    provide: getRepositoryToken(Transfer),
+                    provide: getRepositoryToken(TransferOrmEntity),
                     useValue: {
+                        create: jest.fn().mockReturnValue(mockTransferOrm),
                         save: jest.fn(),
                         createQueryBuilder: jest.fn(() => ({
                             innerJoinAndSelect: jest.fn().mockReturnThis(),
                             where: jest.fn().mockReturnThis(),
-                            getMany: jest.fn().mockResolvedValue([mockTransfer])
-                        }))
+                            getMany: jest.fn().mockResolvedValue([mockTransferOrm]),
+                        })),
                     },
                 },
             ],
         }).compile();
 
         repository = module.get<TransferTypeOrmRepository>(TransferTypeOrmRepository);
-        typeOrmRepo = module.get<Repository<Transfer>>(getRepositoryToken(Transfer)) as jest.Mocked<Repository<Transfer>>;
+        typeOrmRepo = module.get(getRepositoryToken(TransferOrmEntity)) as jest.Mocked<Repository<TransferOrmEntity>>;
     });
 
     it('should be defined', () => {
@@ -66,21 +79,19 @@ describe('TransferTypeOrmRepository', () => {
         });
 
         it('should handle multiple transfers from same company', async () => {
-            // Mock 2 transfers from same company
             const mockTransfers = [
-                { ...mockTransfer, id: 't1' },
-                { ...mockTransfer, id: 't2' }
+                { ...mockTransferOrm, id: 't1' },
+                { ...mockTransferOrm, id: 't2' },
             ];
 
             const queryBuilderMock = {
                 innerJoinAndSelect: jest.fn().mockReturnThis(),
                 where: jest.fn().mockReturnThis(),
                 getMany: jest.fn().mockResolvedValue(mockTransfers),
-            } as unknown as SelectQueryBuilder<Transfer>;
+            } as unknown as SelectQueryBuilder<TransferOrmEntity>;
 
-            jest.spyOn(typeOrmRepo, 'createQueryBuilder').mockImplementation(
-                () => queryBuilderMock
-            );
+            jest.spyOn(typeOrmRepo, 'createQueryBuilder').mockReturnValue(queryBuilderMock);
+
             const result = await repository.findCompaniesWithTransfers(startDate, endDate);
 
             expect(result.length).toBe(1);
@@ -92,11 +103,9 @@ describe('TransferTypeOrmRepository', () => {
                 innerJoinAndSelect: jest.fn().mockReturnThis(),
                 where: jest.fn().mockReturnThis(),
                 getMany: jest.fn().mockResolvedValue([]),
-            } as unknown as SelectQueryBuilder<Transfer>;
+            } as unknown as SelectQueryBuilder<TransferOrmEntity>;
 
-            jest.spyOn(typeOrmRepo, 'createQueryBuilder').mockImplementation(
-                () => queryBuilderMock
-            );
+            jest.spyOn(typeOrmRepo, 'createQueryBuilder').mockReturnValue(queryBuilderMock);
 
             const result = await repository.findCompaniesWithTransfers(startDate, endDate);
             expect(result).toEqual([]);
@@ -104,18 +113,17 @@ describe('TransferTypeOrmRepository', () => {
 
         it('should filter by date range', async () => {
             const mockTransfers = [
-                { ...mockTransfer, id: 't1' },
-                { ...mockTransfer, id: 't2' }
+                { ...mockTransferOrm, id: 't1' },
+                { ...mockTransferOrm, id: 't2' },
             ];
 
             const mockQueryBuilder = {
                 innerJoinAndSelect: jest.fn().mockReturnThis(),
                 where: jest.fn().mockReturnThis(),
                 getMany: jest.fn().mockResolvedValue(mockTransfers),
-            } as unknown as SelectQueryBuilder<Transfer>;
+            } as unknown as SelectQueryBuilder<TransferOrmEntity>;
 
-            jest.spyOn(typeOrmRepo, 'createQueryBuilder')
-                .mockImplementation(() => mockQueryBuilder);
+            jest.spyOn(typeOrmRepo, 'createQueryBuilder').mockReturnValue(mockQueryBuilder);
 
             await repository.findCompaniesWithTransfers(startDate, endDate);
 
@@ -128,11 +136,12 @@ describe('TransferTypeOrmRepository', () => {
 
     describe('create', () => {
         it('should save and return a transfer', async () => {
-            typeOrmRepo.save.mockResolvedValue(mockTransfer);
+            typeOrmRepo.save.mockResolvedValue(mockTransferOrm);
 
             const result = await repository.create(mockTransfer);
 
-            expect(typeOrmRepo.save).toHaveBeenCalledWith(mockTransfer);
+            expect(typeOrmRepo.create).toHaveBeenCalledWith(mockTransfer);
+            expect(typeOrmRepo.save).toHaveBeenCalledWith(mockTransferOrm);
             expect(result).toEqual(mockTransfer);
         });
 
