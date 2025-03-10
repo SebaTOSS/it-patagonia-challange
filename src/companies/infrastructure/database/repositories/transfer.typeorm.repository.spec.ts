@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { TransferTypeOrmRepository } from './transfer.typeorm.repository';
-import { Transfer, Company } from '../../domain';
+import { Transfer, Company } from '../../../domain/entities';
 
 describe('TransferTypeOrmRepository', () => {
     let repository: TransferTypeOrmRepository;

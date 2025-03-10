@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { TransferRepository } from '../ports/transfer.repository';
+import { TransferRepository } from '../../domain/ports/transfer.repository';
 import { CompanyResponse } from '../dto/company.response';
 import { DateUtils } from '../../../shared/utils/date.utils';
 

@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GetCompaniesAdheredUseCase } from './get-companies-adhered.use-case';
-import { CompanyRepository } from '../ports/company.repository';
+import { CompanyRepository } from '../../domain/ports/company.repository';
 import { DateUtils } from '../../../shared/utils/date.utils';
-import { Company } from '../../domain/company.entity';
+import { Company } from '../../domain/entities/company.entity';
 
 describe('GetCompaniesAdheredUseCase', () => {
     let useCase: GetCompaniesAdheredUseCase;

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository, Between } from 'typeorm';
 import { CompanyTypeOrmRepository } from './company.typeorm.repository';
-import { Company } from '../../domain/company.entity';
+import { Company } from '../../../domain/entities/company.entity';
 
 describe('CompanyTypeOrmRepository', () => {
     let repository: CompanyTypeOrmRepository;

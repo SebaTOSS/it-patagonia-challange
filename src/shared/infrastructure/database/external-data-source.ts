@@ -1,6 +1,6 @@
 import { DataSource } from "typeorm";
-import { Company } from "./companies/domain/company.entity";
-import { Transfer } from "./companies/domain/transfer.entity";
+import { CompanyOrmEntity } from '../../../companies/infrastructure/database/entities/company.orm-entity';
+import { TransferOrmEntity } from '../../../companies/infrastructure/database/entities/transfer.orm-entity';
 import { ConfigService } from "@nestjs/config";
 import { config } from "dotenv";
 
@@ -8,15 +8,17 @@ config();
 
 const configService = new ConfigService();
 
-export default new DataSource({
+const dataSource = new DataSource({
     type: 'postgres',
     host: configService.get('DATABASE_HOST'),
     port: configService.get('DATABASE_PORT'),
     username: configService.get('DATABASE_USERNAME'),
     password: configService.get('DATABASE_PASSWORD'),
     database: configService.get('DATABASE_NAME'),
-    entities: [Company, Transfer],
-    migrations: ['src/shared/infrastruture/database/migrations/*.ts'],
+    entities: [CompanyOrmEntity, TransferOrmEntity],
+    migrations: ['./src/shared/infrastructure/database/migrations/*.ts'],
     synchronize: false,
     logging: true,
 });
+
+export default dataSource;

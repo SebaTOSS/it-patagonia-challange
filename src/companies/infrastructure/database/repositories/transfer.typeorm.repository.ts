@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Transfer, Company } from '../../domain';
-import { TransferRepository } from '../../application/ports/transfer.repository';
+import { Transfer, Company } from '../../../domain/entities';
+import { TransferRepository } from '../../../domain/ports/transfer.repository';
+import { TransferOrmEntity } from '../entities';
 
 @Injectable()
 export class TransferTypeOrmRepository implements TransferRepository {
     constructor(
-        @InjectRepository(Transfer)
-        private repository: Repository<Transfer>,
+        @InjectRepository(TransferOrmEntity)
+        private repository: Repository<TransferOrmEntity>,
     ) { }
 
     async findCompaniesWithTransfers(start: Date, end: Date): Promise<Company[]> {

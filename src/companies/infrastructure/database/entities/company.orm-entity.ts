@@ -1,7 +1,7 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
-export class Company {
+@Entity('companies')
+export class CompanyOrmEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 

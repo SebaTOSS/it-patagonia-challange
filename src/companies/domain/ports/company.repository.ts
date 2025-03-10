@@ -1,4 +1,4 @@
-import { Company } from '../../domain/company.entity';
+import { Company } from '../../domain/entities/company.entity';
 
 export interface CompanyRepository {
     create(company: Company): Promise<Company>;
